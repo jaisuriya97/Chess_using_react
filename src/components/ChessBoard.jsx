@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import validate from "./Rules";
 import ChessTile from './ChessTile';
 
 const initialBoard = [
@@ -63,6 +64,8 @@ function ChessBoard() {
             if (match) {
                 const pieceName = match[1];
                 setCurrentPieceName(pieceName);
+                const result = validate(pieceName);
+                console.log(result);
             }
             setboardPiece((values) => {
                 const pieces = values.map((p) => {
