@@ -7,14 +7,14 @@
   height: 100vh;
   display: grid;
   place-content: center;
-  background-color: white;
+  background-color: #1A2130;
 }
 
 .chess-board{
   display: grid;
   grid-template-columns: repeat(8,100px);
-  width: 800px;
-  height: 800px;
+  border: solid 10px #6F4E37;
+  border-radius: 10px;
 }
 
 .tile{
@@ -22,6 +22,7 @@
   place-content: center;
   width: 100px;
   height: 100px;
+  border-radius: 3px;
 }
 .tile-piece{
   width: 100px;
