@@ -1,26 +1,35 @@
 import React, { useEffect, useRef, useState } from 'react';
-import validate from "./Rules";
+import validate  from './Rules';
 import ChessTile from './ChessTile';
 
 const initialBoard = [
-    { img: "pieces-basic-svg/rook-w.svg",x: 0, y: 0 }, { img: "pieces-basic-svg/knight-w.svg", x: 0, y: 1 },
-    { img: "pieces-basic-svg/bishop-w.svg", x: 0, y: 2 }, { img: "pieces-basic-svg/king-w.svg", x: 0, y: 3 },
-    { img: "pieces-basic-svg/queen-w.svg", x: 0, y: 4 }, { img: "pieces-basic-svg/bishop-w.svg", x: 0, y: 5 },
-    { img: "pieces-basic-svg/knight-w.svg", x: 0, y: 6 }, { img: "pieces-basic-svg/rook-w.svg", x: 0, y: 7 },
-    ...Array(8).fill().map((_, i) => ({ img: "pieces-basic-svg/pawn-w.svg", x: 1, y: i })),
-    ...Array(8).fill().map((_, i) => ({ img: "pieces-basic-svg/pawn-b.svg", x: 6, y: i })),
-    { img: "pieces-basic-svg/rook-b.svg", x: 7, y: 0 }, { img: "pieces-basic-svg/knight-b.svg", x: 7, y: 1 },
-    { img: "pieces-basic-svg/bishop-b.svg", x: 7, y: 2 }, { img: "pieces-basic-svg/king-b.svg", x: 7, y: 3 },
-    { img: "pieces-basic-svg/queen-b.svg", x: 7, y: 4 }, { img: "pieces-basic-svg/bishop-b.svg", x: 7, y: 5 },
-    { img: "pieces-basic-svg/knight-b.svg", x: 7, y: 6 }, { img: "pieces-basic-svg/rook-b.svg", x: 7, y: 7 },
+    { img: "pieces-basic-svg/rook-w.svg", name: "rook-w", x: 0, y: 0 },
+    { img: "pieces-basic-svg/knight-w.svg", name: "knight-w", x: 0, y: 1 },
+    { img: "pieces-basic-svg/bishop-w.svg", name: "bishop-w", x: 0, y: 2 },
+    { img: "pieces-basic-svg/king-w.svg", name: "king-w", x: 0, y: 3 },
+    { img: "pieces-basic-svg/queen-w.svg", name: "queen-w", x: 0, y: 4 },
+    { img: "pieces-basic-svg/bishop-w.svg", name: "bishop-w", x: 0, y: 5 },
+    { img: "pieces-basic-svg/knight-w.svg", name: "knight-w", x: 0, y: 6 },
+    { img: "pieces-basic-svg/rook-w.svg", name: "rook-w", x: 0, y: 7 },
+    ...Array(8).fill().map((_, i) => ({ img: "pieces-basic-svg/pawn-w.svg", name: "pawn-w", x: 1, y: i })),
+    ...Array(8).fill().map((_, i) => ({ img: "pieces-basic-svg/pawn-b.svg", name: "pawn-b", x: 6, y: i })),
+    { img: "pieces-basic-svg/rook-b.svg", name: "rook-b", x: 7, y: 0 },
+    { img: "pieces-basic-svg/knight-b.svg", name: "knight-b", x: 7, y: 1 },
+    { img: "pieces-basic-svg/bishop-b.svg", name: "bishop-b", x: 7, y: 2 },
+    { img: "pieces-basic-svg/king-b.svg", name: "king-b", x: 7, y: 3 },
+    { img: "pieces-basic-svg/queen-b.svg", name: "queen-b", x: 7, y: 4 },
+    { img: "pieces-basic-svg/bishop-b.svg", name: "bishop-b", x: 7, y: 5 },
+    { img: "pieces-basic-svg/knight-b.svg", name: "knight-b", x: 7, y: 6 },
+    { img: "pieces-basic-svg/rook-b.svg", name: "rook-b", x: 7, y: 7 },
 ];
 
 function ChessBoard() {
-    const [boardPiece, setboardPiece] = useState([]);
+    const [boardPiece, setBoardPiece] = useState([]);
     const [activePiece, setActivePiece] = useState(null);
-    const [currentPieceName,setCurrentPieceName] = useState(null);
+    const [currentPieceName, setCurrentPieceName] = useState(null);
+
     useEffect(() => {
-        setboardPiece(initialBoard);
+        setBoardPiece(initialBoard);
     }, []);
 
     const VerticalAxis = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
@@ -31,10 +40,9 @@ function ChessBoard() {
     const PieceGrab = (e) => {
         const board = ChessboardRef.current;
         if (e.target.classList.contains("tile-piece") && board) {
-            const GridX = Math.abs(Math.floor((e.clientY - board.offsetTop) / 100) - 7);
-            const GridY = Math.floor((e.clientX - board.offsetLeft) / 100);
-            setActivePiece({ element: e.target, gridX: GridX, gridY: GridY });
-
+            const gridX = Math.abs(Math.floor((e.clientY - board.offsetTop) / 100) - 7);
+            const gridY = Math.floor((e.clientX - board.offsetLeft) / 100);
+            setActivePiece({ element: e.target, gridX: gridX, gridY: gridY });
             e.target.style.position = "absolute";
         }
     };
@@ -59,25 +67,31 @@ function ChessBoard() {
             const board = ChessboardRef.current;
             const x_axis = Math.abs(Math.floor((e.clientY - board.offsetTop) / 100) - 7);
             const y_axis = Math.floor((e.clientX - board.offsetLeft) / 100);
-            const regex = /background-image: url\("pieces-basic-svg\/([^"]+)\.svg"\);/;
-            const match = activePiece.element.attributes.style.nodeValue.match(regex);
+            console.log(x_axis,y_axis);
+            const regex = /pieces-basic-svg\/([^"]+)\.svg/;
+            const match = activePiece.element.style.backgroundImage.match(regex);
             if (match) {
                 const pieceName = match[1];
                 setCurrentPieceName(pieceName);
-                const result = validate(pieceName);
+                const dropPosition = {
+                    x: x_axis,
+                    y: y_axis
+                };
+                const result = validate(pieceName, boardPiece, dropPosition, activePiece);
                 console.log(result);
-            }
-            setboardPiece((values) => {
-                const pieces = values.map((p) => {
-                    if (p.x === activePiece.gridX && p.y === activePiece.gridY) {
-                        return { ...p, x: x_axis, y: y_axis };
-                    }
-                    return p;
-                });
-                return pieces;
-            });
 
-            activePiece.element.style.position = "absolute";
+                setBoardPiece((values) => {
+                    const pieces = values.map((p) => {
+                        if (p.x === activePiece.gridX && p.y === activePiece.gridY) {
+                            return { ...p, x: result ? x_axis : activePiece.gridX, y: result ? y_axis : activePiece.gridY };
+                        }
+                        return p;
+                    });
+                    return pieces;
+                });
+            }
+
+            activePiece.element.style.position = "";
             activePiece.element.style.left = "";
             activePiece.element.style.top = "";
             setActivePiece(null);
@@ -93,13 +107,12 @@ function ChessBoard() {
             boardPiece.forEach((p) => {
                 if (p.x === j && p.y === i) {
                     image = p.img;
-                    name=p.name;
+                    name = p.name;
                 }
             });
-            tiles.push(<ChessTile key={`${i}-${j}`} num={number} img={image} name={name}/>);
+            tiles.push(<ChessTile key={`${i}-${j}`} num={number} img={image} name={name} />);
         }
     }
-
     return (
         <div className='chess-board'
             ref={ChessboardRef}
